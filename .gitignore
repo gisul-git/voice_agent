@@ -1,0 +1,16 @@
+ai-voice-env310/
+__pycache__/
+.vscode/
+
+.env
+.env.local
+
+*.pyc
+*.pyo
+
+# Local/generated audio files
+*.wav
+*.mp3
+
+# Keep example env template in repo
+!.env.example
