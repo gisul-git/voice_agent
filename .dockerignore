@@ -1,0 +1,13 @@
+ai-voice-env310/
+__pycache__/
+.vscode/
+.git/
+.github/
+*.pyc
+*.pyo
+*.pyd
+*.wav
+*.srt
+*.tsv
+*.vtt
+test.json

@@ -1,0 +1,45 @@
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  voice-agent:
+    image: ${VOICE_AGENT_IMAGE:-your-dockerhub-user/voice-agent:latest}
+    container_name: voice-agent
+    restart: unless-stopped
+    depends_on:
+      ollama:
+        condition: service_healthy
+    environment:
+      OLLAMA_URL: http://ollama:11434/api/chat
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3.2:3b}
+      MAX_TTS_SENTENCES: ${MAX_TTS_SENTENCES:-2}
+      MAX_TTS_CHARS: ${MAX_TTS_CHARS:-140}
+      AUDIO_PLAYER: ${AUDIO_PLAYER:-auto}
+    devices:
+      - /dev/snd:/dev/snd
+
+  ollama-init:
+    image: ollama/ollama:latest
+    container_name: ollama-init
+    profiles: ["init"]
+    depends_on:
+      ollama:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "-c"]
+    command: ollama pull ${OLLAMA_MODEL:-llama3.2:3b}
+    volumes:
+      - ollama_data:/root/.ollama
+
+volumes:
+  ollama_data:
